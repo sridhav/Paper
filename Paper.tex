@@ -29,49 +29,127 @@
 	tabsize=3
 }
 
-
-
-
-
 \begin{document}
-	\title{Hadoop Image Processing Framework}
-	\author{\IEEEauthorblockN{Sridhar Vemula}
-		\IEEEauthorblockA{Computer Science Department\\
-			Oklahoma State University\\
-			Stillwater, Oklahoma \\
-			Email: sridhar.vemula@okstate.edu}
-		\and
-		\IEEEauthorblockN{Christopher Crick}
-		\IEEEauthorblockA{Computer Science Department\\
-			Oklahoma State University\\
-			Stillwater, Oklahoma \\
-			Email: chriscrick@cs.okstate.edu}
-	}
-	\maketitle
-	\begin{abstract}
-		With the rapid growth of social media, the number of images being uploaded to the internet is exploding. Massive quantities of images are shared through multi-platform services such as Snapchat, Instagram, Facebook and WhatsApp; recent studies estimate that over 1.8 billion photos are uploaded every day.  However, for the most part, applications that make use of this vast data have yet to emerge. Most current image processing applications, designed for small-scale, local computation, do not scale well to web-sized problems with their large requirements for computational resources and storage.  The emergence of processing frameworks such as the Hadoop MapReduce\cite{Hadoop2009} platform addresses the problem of providing a system for computationally intensive data processing and distributed storage. However, to learn the technical complexities of developing useful applications using Hadoop requires a large investment of time and experience on the part of the developer.  As such, the pool of researchers and programmers with the varied skills to develop applications that can use large sets of images has been limited. To address this we have developed the Hadoop Image Processing Framework, which provides a Hadoop-based library to support large-scale image processing. The main aim of the framework is to allow developers of image processing applications to leverage the Hadoop MapReduce framework without having to master its technical details and introduce an additional source of complexity and error into their programs.
-	\end{abstract}
+\title{Hadoop Image Processing Framework}
+\author{\IEEEauthorblockN{Sridhar Vemula}
+  \IEEEauthorblockA{Computer Science Department\\
+    Oklahoma State University\\
+    Stillwater, Oklahoma \\
+    Email: sridhar.vemula@okstate.edu}
+  \and
+  \IEEEauthorblockN{Christopher Crick}
+  \IEEEauthorblockA{Computer Science Department\\
+    Oklahoma State University\\
+    Stillwater, Oklahoma \\
+    Email: chriscrick@cs.okstate.edu}
+}
+\maketitle
+\begin{abstract}
+With the rapid growth of social media, the number of images being
+uploaded to the internet is exploding. Massive quantities of images
+are shared through multi-platform services such as Snapchat,
+Instagram, Facebook and WhatsApp; recent studies estimate that over
+1.8 billion photos are uploaded every day.  However, for the most
+part, applications that make use of this vast data have yet to
+emerge. Most current image processing applications, designed for
+small-scale, local computation, do not scale well to web-sized
+problems with their large requirements for computational resources and
+storage.  The emergence of processing frameworks such as the Hadoop
+MapReduce\cite{Hadoop2009} platform addresses the problem of providing
+a system for computationally intensive data processing and distributed
+storage. However, to learn the technical complexities of developing
+useful applications using Hadoop requires a large investment of time
+and experience on the part of the developer.  As such, the pool of
+researchers and programmers with the varied skills to develop
+applications that can use large sets of images has been limited. To
+address this we have developed the Hadoop Image Processing Framework,
+which provides a Hadoop-based library to support large-scale image
+processing. The main aim of the framework is to allow developers of
+image processing applications to leverage the Hadoop MapReduce
+framework without having to master its technical details and introduce
+an additional source of complexity and error into their programs.
+\end{abstract}
 	
-	\IEEEpeerreviewmaketitle
+\IEEEpeerreviewmaketitle
 	
-	\section{Introduction}
-	With the spread of social media in recent years, a large amount of image data has been accumulating. When processing this massive data resource has been limited to single computers, computational power and storage ability quickly become bottlenecks. Alternately, processing tasks can typically be performed on a distributed system by dividing the task into several subtasks. The ability to parallelize tasks allows for scalable, efficient execution of resource-intensive applications.  The Hadoop MapReduce framework provides a platform for such tasks.
+\section{Introduction}
+With the spread of social media in recent years, a large amount of
+image data has been accumulating. When processing this massive data
+resource has been limited to single computers, computational power and
+storage ability quickly become bottlenecks. Alternately, processing
+tasks can typically be performed on a distributed system by dividing
+the task into several subtasks. The ability to parallelize tasks
+allows for scalable, efficient execution of resource-intensive
+applications.  The Hadoop MapReduce framework provides a platform for
+such tasks.
 	
-	When considering operations such as face detection, image classification\cite{Li2009} and other types of processing on images, there are limits on what can be done to improve performance of single computers to make them able to process information at the scale of social media. Therefore, the advantages of parallel distributed processing of a large image dataset by using the computational resources of a cloud computing environment should be considered. In addition, if computational resources can be secured easily and relatively inexpensively, then cloud computing is suitable for handling large image data sets at very low cost and increased performance. Hadoop, as a system for processing large numbers of images by parallel and distributed computing, seems promising. In fact, Hadoop is in use all over the world. Studies using Hadoop have been performed, dealing with text data files\cite{Lin2010}, analyzing large volumes of DNA sequence data\cite{McKenna2010}, converting the data of a large number of still images to PDF format, and carrying out feature selection/extraction in astronomy\cite{wiley2011}. %Cite the papers in which these examples appear
-These examples demonstrate the usefulness of the Hadoop system, which can run multiple processes in parallel for load balancing and task management.
+When considering operations such as face detection, image
+classification\cite{Li2009} and other types of processing on images,
+there are limits on what can be done to improve performance of single
+computers to make them able to process information at the scale of
+social media. Therefore, the advantages of parallel distributed
+processing of a large image dataset by using the computational
+resources of a cloud computing environment should be considered. In
+addition, if computational resources can be secured easily and
+relatively inexpensively, then cloud computing is suitable for
+handling large image data sets at very low cost and increased
+performance. Hadoop, as a system for processing large numbers of
+images by parallel and distributed computing, seems promising. In
+fact, Hadoop is in use all over the world. Studies using Hadoop have
+been performed, dealing with text data files\cite{Lin2010}, analyzing
+large volumes of DNA sequence data\cite{McKenna2010}, converting the
+data of a large number of still images to PDF format, and carrying out
+feature selection/extraction in astronomy\cite{wiley2011}.  These
+examples demonstrate the usefulness of the Hadoop system, which can
+run multiple processes in parallel for load balancing and task
+management.
 	
-	Most of the image processing applications that use the Hadoop MapReduce framework are highly complex and impose a staggering learning curve.  The overhead, in programmer time and expertise, required to implement such applications is cumbersome.  To address this, we present the Hadoop Image Processing Framework, which hides the highly technical details of the Hadoop system and allows programmers who can implement image processing algorithms but who have no particular expertise in distributed systems to nevertheless leverage the advanced resources of a distributed, cloud-oriented Hadoop system. Our framework provides users with easy access to large-scale image data, smoothly enabling rapid prototyping and flexible application of complex image processing algorithms to very large, distributed image databases.
+Most of the image processing applications that use the Hadoop
+MapReduce framework are highly complex and impose a staggering
+learning curve.  The overhead, in programmer time and expertise,
+required to implement such applications is cumbersome.  To address
+this, we present the Hadoop Image Processing Framework, which hides
+the highly technical details of the Hadoop system and allows
+programmers who can implement image processing algorithms but who have
+no particular expertise in distributed systems to nevertheless
+leverage the advanced resources of a distributed, cloud-oriented
+Hadoop system. Our framework provides users with easy access to
+large-scale image data, smoothly enabling rapid prototyping and
+flexible application of complex image processing algorithms to very
+large, distributed image databases.
 	
-	The Hadoop Image Processing Framework is largely a software engineering platform, with the goal of hiding Hadoop's complexity while providing users with the ability to use the system for large-scale image processing without becoming crack Hadoop engineers.  The framework's ease of use and Java-oriented semantics will further ease the process of creating large scale image applications and experiments. This framework is an excellent tool for novice Hadoop users, image application developers and computer vision researchers, allowing the rapid development of image software that can take advantage of the huge data stores, rich metadata and global reach of current online image sources.
+The Hadoop Image Processing Framework is largely a software
+engineering platform, with the goal of hiding Hadoop's complexity
+while providing users with the ability to use the system for
+large-scale image processing without becoming crack Hadoop engineers.
+The framework's ease of use and Java-oriented semantics will further
+ease the process of creating large scale image applications and
+experiments. This framework is an excellent tool for novice Hadoop
+users, image application developers and computer vision researchers,
+allowing the rapid development of image software that can take
+advantage of the huge data stores, rich metadata and global reach of
+current online image sources.
 	
-	In the following section  we will describe prior work in this area. Next we present an overview of the Hadoop Image Processing Framework including the Downloader, Processor and Extractor stages. Additionally, we describe our approach of distributing tasks for MapReduce. Finally, we demonstrate the potential of this framework with quantitative analysis and experiments performed on image processing tasks.
+In the following section we will describe prior work in this
+area. Next we present an overview of the Hadoop Image Processing
+Framework including the Downloader, Processor and Extractor
+stages. Additionally, we describe our approach of distributing tasks
+for MapReduce. Finally, we demonstrate the potential of this framework
+with quantitative analysis and experiments performed on image
+processing tasks.
 	
-	\section{Related Work}
-	With rapid increase of usage of online photo storage and social media like facebook, flickr and picasa the amount of image data available is larger than ever before. The amount of image data is growing rapidly every day. According to Buzzfeed for every minute 27800 photos are uploaded to Instagram. As per facebook, they get 208,300 photos uploaded every minute\cite{Horaczek2013}. This alone provides a plethora of image that can scale up to billions of images. It is these reasons that motivate the need for research with image processing applications that take advantage of large sets of images
+\section{Related Work}
+With the rapid usage increase of online photo storage and social media
+on sites like Facebook, Flickr and Picasa, more image data is
+available than ever before, and is growing every day.  Every minute
+27800 photos are uploaded to Instagram, while Facebook receives
+208,300 photos over the same time frame.\cite{Horaczek2013} This alone
+provides a source of image data that can scale into the billions.  The
+explosion of available images on social media has motivated image
+processing research and application development that can take
+advantage of very large image data stores.
 	
-	A brief overview of previous work sharing the themes of image processing and distributed computation is presented below:
-	
-	Web-Scale Computer Vision using MapReduce for Multimedia Data Mining \cite{White2010} present a case study of classifying and clustering billions of regular images using MapReduce. A way of pre-processing images for use in a sliding-window approach for object recognition is described. Distributed High Performance Video Processing in the cloud, outlines some of the limitations of the MapReduce model when dealing with high-speed video encoding, namely its dependence on the NameNode as a single point of failure, and lack of possibility for generalization in order to suit the issue at hand. An alternate optimized implementation is proposed for providing cloud-based IaaS (Infrastructure as a Service) Solution. In Parallel K-Means clustering of Remote Sensing Images Based on MapReduce \cite{Lv2010} describe using the k-means algorithm in conjunction with MapReduce and satellite/aerophoto images in order to find different elements based on their color. Using Transaction Based Parallel computing to solve image processing and computational physics problems by Harold describes the use of distributed computing with two examples video processing and subsurface transport. There was no information provided on how image processing parts of the examples. 
+\cite{White2010} presents a case study of classifying and clustering billions of regular images using MapReduce. It describes an image pre-processing technique for use in a sliding-window approach for object recognition.  Distributed High Performance Video Processing in the cloud outlines some of the limitations of the MapReduce model when dealing with high-speed video encoding, namely its dependence on the NameNode as a single point of failure, and lack of possibility for generalization in order to suit the issue at hand. An alternate optimized implementation is proposed for providing cloud-based IaaS (Infrastructure as a Service) Solution. In Parallel K-Means clustering of Remote Sensing Images Based on MapReduce \cite{Lv2010} describe using the k-means algorithm in conjunction with MapReduce and satellite/aerophoto images in order to find different elements based on their color. Using Transaction Based Parallel computing to solve image processing and computational physics problems by Harold describes the use of distributed computing with two examples video processing and subsurface transport. There was no information provided on how image processing parts of the examples. 
 	
 	Case Study of Scientific Data Processing on a Cloud Using Hadoop \cite{Zhang2010} present methods used for processing sequences of microscope images of live cells. The images are relatively small 512x512 16-bit pixels, stored in 90 MB folders there were some issues regarding to fitting into Hadoop DFS blocks with were solved by custom InputFormat, InputSplit and Record Reader classes. A scalable image processing framework for gigapixel Mars and other celestial body images by Mark Powell describes the way NASA handles image processing of celestial images captured by the Mars Orbiter and rovers. Clear and concise descriptions are provided about the segmentation of gigapixel images into tiles, how the tiles are processed and how image processing framework handles scaling and works with the distributed processing. Ultra-fast processing of gigapixel tissue microarray images using high performance computing \cite{Wang2011} about the speeding up the analysis of Tissue MicroArray images by substituting human expert analysis for automated processing algorithms. While the images were measured to be in gigapixels, the content is easily segmented and there was no need to focus on being able to analyze all of image at once. The work was all done on a specially build grip high performance	computing platform on Hadoop framework. 
 	
@@ -80,25 +158,41 @@ These examples demonstrate the usefulness of the Hadoop system, which can run mu
 	While the above shows that there has been lot of work in this area, providing a framework to ease the process develop large-scale image processing applications. The question remains how the performance for Hadoop can be increased for large scale image processing tasks on small files.
 	
 \section{Methodology}
-Hadoop Image processing Framework is created to provide users a tool to develop a large scale image processing applications with ease.
+The Hadoop Image Processing Framework is intended to provide users
+with an accessible, easy-to-use tool for developing large-scale image
+processing applications.
 
-The main goals of Hadoop Image Processing framework:
+The main goals of the Hadoop Image Processing Framework are:
 \begin{itemize}
-	\item Provide an open source framework over Hadoop MapReduce for developing large scale image applications 
-	\item Flexibility to store images in various Hadoop File Formats
-	\item Present users with an intuitive interface for image based operations which are highly parallelized and balanced and hide the high technical details of hadoop MapReduce Framework
-	\item Allow interoperability between various image processing libraries
+\item Provide an open source framework over Hadoop MapReduce for
+  developing large-scale image applications
+\item Provide the ability to flexibly store images in various Hadoop
+  file formats
+\item Present users with an intuitive application programming
+  interface for image-based operations which is highly parallelized
+  and balanced, but which hides the technical details of Hadoop
+  MapReduce
+\item Allow interoperability between various image processing
+  libraries
 \end{itemize}
 
 \subsection{Downloading and storing image data}
-Hadoop's distributed file system(HDFS) to store files in various nodes throughout the cluster. Storing small files\cite{White2009} is a big problem in Hadoop. A small file is one which is significantly smaller than HDFS block size. As the large image dataset can have many number of small files and the problem is HDFS cant handle lots of files. The problem can be solved by providing some kind of container to group the files in some way. Hadoop offers a few options:
+Hadoop uses the Hadoop Distributed File System (HDFS) to store files
+in various nodes throughout the cluster.  One of Hadoop's significant
+problems is that of small file storage. \cite{White2009} A small file
+is one which is significantly smaller than HDFS block size.  Large
+image datasets are made up of small image files in great numbers,
+which is a situation which HDFS has a great deal of trouble
+handling. The problem can be solved by providing a container to group
+the files in some way. Hadoop offers a few options:
 \begin{itemize}
 	\item HAR File
 	\item Sequence File
 	\item Map File
 \end{itemize}
 
-The Downloader Module of the framework does the following work
+The Downloader Module of our Hadoop Image Processing Framework
+performs the following operations:
 
 \textbf{Step 1: Input a URL List.} Initially user inputs a file containing url's of images to download. The input list should be a text file with one image url per line. The list can be generated by hand, database or a search. The framework provides a extendable ripper module to extract urls from flickr, google and databases. In addition to the list the user will input the type of image bundle to be generated(e.g. har, sequence or map). According to the input, the urls are divided across the nodes for maximum efficiency and parallelism to download the images. Each node map task will generate few image bundles as per the input type containing all the of the images it downloaded. In the reduce phase, the Reducer will merge these image bundles  into a large image bundle.
 

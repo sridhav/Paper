@@ -1,7 +1,7 @@
 \documentclass[conference]{IEEEtran}
 
 \usepackage{graphicx}
-
+\usepackage{multirow}
 \graphicspath{ {images/} }
 
 
@@ -191,34 +191,113 @@ The obtained HImage object is retrieved as image bytes and the image bytes are s
 \end{figure}
 
 
-\section{Experiments and Observations}
+\section{Image Processing Computations}
+To address the framework capability, we considered to take some existing well used image processing algorihtms and enable running its functionality on a hadoop cluster. These considerations led us to a development of image processing functionality in java for the following computations: flat field correction, canny edge detection and image segmentation. These computations are computationally intensive and data intensive which are operated on range from hundreds to hundred thousands of images. Next we categorize these three computations
 
-We describe two image applications using Hadoop Image Processing framework. These applications enable user perform large scale image processing operations with ease. These applications are complex and inefficient one existing platforms, yet simple to implement using the framework
+%\subsection{Flat Field Correction}
+%Flat Field Correction(FFC) is described mathematically below:
+%\begin{equation}
+%	I^{FFC}(x,y) = \frac{I^{RAW}(x,y)-DI(x,y)}{WI(x,y)-DI(x,y)}
+%\end{equation}
+
+%where \begin{math}I^{FFC}(x,y))\end{math} is the flat-field corrected image intensity, \begin{math}DI(x,y)\end{math} is the dark image acquired by closing the camera shutter, \begin{math}I^{RAW}(x,y)\end{math} is the raw uncorrected image density and WI(x,y) is the flat field intensity acquired without any object to correct primarily for spatial shading. This is the simpleset computations that consists of two subtractions and one division for pixel. It needs the DI and WI images co-located from the distributed execution perspective.
+
+\subsection{Laplacian Filter}
+The Laplacian is a 2-D isotropic measure of the 2nd spatial derivative of an image. The Laplacian of an image highlights regions of rapid intensity change and is therefore often used for edge detection. The Laplacian is often applied to an image that has first been smoothed with something approximating a Gaussian smoothing filter in order to reduce sensitivity to noise. The operator normally takes a single gray level image as input and produces another gray level image as output.
+
+The Laplacian \begin{math} L(x,y)\end{math}of an image with pixel intensity values \begin{math}I(x,y)\end{math} is given by 
+\begin{equation}
+L(x,y) = \frac{\partial^2 I}{\partial x^2} + \frac{\partial^2 I}{\partial y^2}
+\end{equation} 
+
+This is calculated using a convolution filter.
+
+Since the input image is represented as a set of discrete pixels, we have to find a discrete convolution kernel that can approximate the second derivatives in the definition of the Laplacian. This a simplest computation that consists of few additions and multiplications.
 
 \subsection{Canny Edge Detection}
-
 Canny Edge Detection\cite{Canny86} is an multi-stage algorithm to detect a wide range of edges in images. Edge detection, especially step edge detection is an important technique to extract useful structural information from different vision objects and dramatically reduce the amount of data to be processed. Among the edge detection methods developed so far, canny edge detection algorithm is one of the most strictly defined methods that provides good and reliable detection.
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.45\textwidth]{input-canny}
-	\caption{A Sample Image from downloaded image bundle}
-	\label{fig:input-canny}
-\end{figure}
+The process of Canny edge detection algorithm can be broken down to 5 different stages:
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.45\textwidth]{output-canny}
-	\caption{Processed image using canny edge detection}
-	\label{fig:output-canny}
-\end{figure}
+\begin{itemize}
+	\item Apply Gaussian filter to smooth the image in order to remove the noise.
+	\item Find the intensity gradients of the image.
+	\item Apply non-maximum suppression to get rid of spurious response to edge detection
+	\item Apply double threshold to determine potential edges.
+	\item Track edge by hysteresis. Finalize the detection of edges by suppressing all the other edges that are weak and not connected to strong edges. 
+\end{itemize}
 
-\subsubsection{Characterstics of Image Dataset, Hardware and Software}
-We computed edge detection on a dataset which is about 1TB size. The data set is made from the flickr search based on a keyword flight. The data set is extracted using the a FlickrRipper in the framework which implements Ripper Interface. The Ripper interface can be implemented for any custom Rippers to get the image URLs. The example data set is composed of 220000 images at 4.76 MB/image equals to 1 TB. We ran the edge detection on the cluster with 7 nodes having 2 to 4 virtual processors with 4 to 8 GB RAM. Each virtual processor clocks at a speed of 3.2 Ghz. The algorithm was implemented independently and used on single desktop, Hadoop cluster without framework and Hadoop cluster with framework.
 
-\subsubsection{Observations}   
+\subsection{Image segmentation using k-means clustering}
+K-Means algorithm is an unsupervised clustering algorithm that classifies the input data points into multiple classes based on their inherent distance from each other. The algorithm assumes that the data features form a vector space and tries to find natural clustering in them. The points are clustered around centroids \begin{math}\mu_{i} \forall i = 1...k\end{math} which are obtained by minimizing the objective
+\begin{equation}
+	V = \sum\limits_{i=1}^n \sum\limits_{x_{j}\in S_{i}} (x_{j} - \mu_{i})^2
+\end{equation}
 
-The desktop implementation of the Algorithm is a java program for processing a small image dataset. As soon as the data set is processed the program halts. The desktop implementation starts as a single thread. One image is processed every time. As soon as the image is processed, it starts processing a new image. When the data set size is low, the program runs smooth with best performance. As data set size increases to Terabytes the system can't handle such huge amounts of data. To handle such large amounts of data we use the distributed computing using hadoop.
+where there are \begin{math}k\end{math} clusters \begin{math} S_{i},i=1,2,...,k \end{math} and \begin{math} \mu_{i} \end{math} is the centroid or mean point of all the points \begin{math}x_{j} \in S_{i}\end{math} 
+
+As a part of the experiment, an iterative version of the algorithm was implemented. The algorithm takes a 2 dimensional image as input. Various steps in the algorithm are as follows:
+
+\begin{itemize}
+	\item Compute the intensity distribution(also called the histogram) of the intensities.
+	\item Initialize the centroids with k random intensities.
+	\item Repeat the following steps until the cluster labels of the image does not change anymore.
+	\item Cluster the points based on distance of their intensities from the centroid intensities.
+	\begin{equation}
+		c^{i} := arg min_{j}||x^{i} - \mu_{j}||^2
+	\end{equation}
+	\item Compute the new centroid for each of the clusters.
+	\begin{equation}
+		\mu_{i} = \frac{\sum\limits_{i=1}^{m} 1\{c_{i} = j\}x^i}{\sum\limits_{i=1}^{m} 1\{c_{i} = j\}}
+	\end{equation}
+	
+	where \begin{math}k\end{math} is a parameter of the algorithm (the number of clusters to be found), \begin{math}i\end{math} iterates over that all the intensities, \begin{math}j\end{math} iterates over all the centroids and \begin{math}\mu_{i}\end{math} are the centroid intensities.
+\end{itemize}
+	
+
+\section{Experimental Results}
+
+
+We describe two image processing algorithms using Hadoop Image Processing framework. These image processing algorithms are relatively simple to implement on a single node, implementing these algorithms are complex and inefficient on existing platforms, yet simple to implement using the framework.In the following section we provided image processing computations with the data set described in Section VA. The hardware and software specifications are provided in Section VB as well as observations in Section VC 
+
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.45\textwidth]{input-canny}
+%	\caption{A Sample Image from downloaded image bundle}
+%	\label{fig:input-canny}
+%\end{figure}
+
+%\begin{figure}[h]
+%	\centering
+%	\includegraphics[width=0.45\textwidth]{output-canny}
+%	\caption{Processed image using canny edge detection}
+%	\label{fig:output-canny}
+%\end{figure}
+
+\subsection{Characteristics of Image Dataset, Hardware and Software}
+We computed image processing computations on a dataset which is about 1TB size. The data set is made from the flickr search based on a keyword flight. The data set is extracted using the a FlickrRipper in the framework which implements Ripper Interface. The Ripper interface can be implemented for any custom Rippers to get the image URLs. The example data set is composed of 220000 images at 4.76 MB/image equals to 1 TB.  
+
+\subsection{Computer Hardware and Software Characterstics}
+We ran the image processing computations on a cluster with 6 nodes and on a desktop computer. Table summarizes the cluster and desktop hardware and software specifications. The cluster nodes differ in terms of CPU speed and RAM. We installed hadoop, cloudera CDH5 and java 1.7 on the cluster to support java code execution. The desktop computer had similar software configuration to the cluster.
+
+\begin{table}[h]
+	\begin{tabular}{|l|l|l|l|}
+		\hline
+		& \multicolumn{1}{c|}{\textbf{Specs}}                            & \multicolumn{1}{c|}{\textbf{Cluster}}                                                                                                           & \multicolumn{1}{c|}{\textbf{Desktop}}                                                                               \\ \hline
+		\multirow{2}{*}{Hardware} & Cluster Nodes                                                  & \begin{tabular}[c]{@{}l@{}}6 datanodes having \\ from 2 to 4 virtual \\ processors with 4 GB\\ RAM and namenode \\ having 8 GB RAM\end{tabular} & \begin{tabular}[c]{@{}l@{}}Intel Xeon @ 2Ghz\\ 8 cores, 16GB of RAM \\ and hyper threading\\ activated\end{tabular} \\ \cline{2-4} 
+		& Networking                                                     & 1Gbit/second                                                                                                                                    &                                                                                                                     \\ \hline
+		\multirow{3}{*}{Software} & \begin{tabular}[c]{@{}l@{}}Java Virtual\\ Machine\end{tabular} & \begin{tabular}[c]{@{}l@{}}Java version \\ "1.7.0\_45"\\ Java SE Runtime\\ Environment\end{tabular}                                             & \begin{tabular}[c]{@{}l@{}}Java version \\ "1.7.0\_45"\\ Java SE Runtime\\ Environment\end{tabular}                 \\ \cline{2-4} 
+		& Hadoop                                                         & \begin{tabular}[c]{@{}l@{}}hadoop 2.5\\ cloudera CDH5\end{tabular}                                                                              &                                                                                                                     \\ \cline{2-4} 
+		& \begin{tabular}[c]{@{}l@{}}Operating\\ System\end{tabular}     & CentOS 6.5                                                                                                                                      & CentOS 6.5                                                                                                          \\ \hline
+	\end{tabular}
+\end{table}
+
+
+\subsection{Observations}   
+
+The desktop implementation of the Algorithm is a java program for processing a small image dataset. As soon as the data set is processed the program halts. The desktop implementation starts as a single thread. One image is processed every time. As soon as the image is processed, it starts processing a new image. When the data set size is low, the program runs smooth with best performance. As data set size increases to Tera-bytes the system can't handle such huge amounts of data. To handle such large amounts of data we use the distributed computing using hadoop.
+
 
 
 \begin{figure}[h]

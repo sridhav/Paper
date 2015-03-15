@@ -401,7 +401,23 @@ lacks a reduce phase.
 
 
 \section{Image Processing Computations}
-To address the framework capability, we considered to take some existing well used image processing algorihtms and enable running its functionality on a hadoop cluster. These considerations led us to a development of image processing functionality in java for the following computations: flat field correction, canny edge detection and image segmentation. These computations are computationally intensive and data intensive which are operated on range from hundreds to hundred thousands of images. Next we categorize these three computations
+To explore the Hadoop Image Processing Framework's capabilities and
+performance, we implemented multiple variations of existing
+widely-used image processing algorithms:
+\begin{itemize}
+\item A stand-alone implementation running on a single node with no
+  distributed processing capability
+\item A generic Hadoop implementation which requires a high level of
+  software engineering expertise within the Hadoop framework
+\item An implementation that employs the Hadoop Image Processing
+  Framework
+\end{itemize}
+
+We chose the following algorithms: Laplacian filtering, Canny edge
+detection and $k$-means image segmentation.  These are widely-used,
+computation- and data-intensive algorithms of varying complexity which
+require large distributed systems for timely operation on hundreds of
+thousands of images.
 
 %\subsection{Flat Field Correction}
 %Flat Field Correction(FFC) is described mathematically below:
@@ -412,60 +428,100 @@ To address the framework capability, we considered to take some existing well us
 %where \begin{math}I^{FFC}(x,y))\end{math} is the flat-field corrected image intensity, \begin{math}DI(x,y)\end{math} is the dark image acquired by closing the camera shutter, \begin{math}I^{RAW}(x,y)\end{math} is the raw uncorrected image density and WI(x,y) is the flat field intensity acquired without any object to correct primarily for spatial shading. This is the simpleset computations that consists of two subtractions and one division for pixel. It needs the DI and WI images co-located from the distributed execution perspective.
 
 \subsection{Laplacian Filter}
-The Laplacian is a 2-D isotropic measure of the 2nd spatial derivative of an image. The Laplacian of an image highlights regions of rapid intensity change and is therefore often used for edge detection. The Laplacian is often applied to an image that has first been smoothed with something approximating a Gaussian smoothing filter in order to reduce sensitivity to noise. The operator normally takes a single gray level image as input and produces another gray level image as output.
+The Laplacian is a 2-D isotropic measure of the 2nd spatial derivative
+of an image. The Laplacian of an image highlights regions of rapid
+intensity change and is therefore often used for edge detection. The
+Laplacian is often applied to an image that has first been smoothed
+with an approximation of a Gaussian filter in order to reduce
+sensitivity to noise. The operator normally takes a single gray level
+image as input and produces another gray level image as output.
 
-The Laplacian \begin{math} L(x,y)\end{math}of an image with pixel intensity values \begin{math}I(x,y)\end{math} is given by 
+The Laplacian \begin{math} L(x,y)\end{math}of an image with pixel
+intensity values \begin{math}I(x,y)\end{math} is given by
 \begin{equation}
 L(x,y) = \frac{\partial^2 I}{\partial x^2} + \frac{\partial^2 I}{\partial y^2}
 \end{equation} 
 
 This is calculated using a convolution filter.
 
-Since the input image is represented as a set of discrete pixels, we have to find a discrete convolution kernel that can approximate the second derivatives in the definition of the Laplacian. This a simplest computation that consists of few additions and multiplications.
+Since the input image is represented as a set of discrete pixels, we
+have to find a discrete convolution kernel that can approximate the
+second derivatives in the definition of the Laplacian. This is a very
+simple computation that consists of a few additions and
+multiplications.
 
 \subsection{Canny Edge Detection}
-Canny Edge Detection\cite{Canny86} is an multi-stage algorithm to detect a wide range of edges in images. Edge detection, especially step edge detection is an important technique to extract useful structural information from different vision objects and dramatically reduce the amount of data to be processed. Among the edge detection methods developed so far, canny edge detection algorithm is one of the most strictly defined methods that provides good and reliable detection.
+Canny edge detection\cite{Canny86} is an multi-stage algorithm to
+detect a wide range of edges in images. Edge detection, especially
+step edge detection, is an important technique to extract useful
+structural information from visual information, dramatically reducing
+the amount of data to be processed. Among existing edge detection
+methods, the Canny edge detection algorithm is considered to provide
+reliable edge detection without relying on context-specific
+heuristics.
 
-The process of Canny edge detection algorithm can be broken down to 5 different stages:
+The process of the Canny edge detection algorithm can defined in five
+stages:
 
 \begin{itemize}
-	\item Apply Gaussian filter to smooth the image in order to remove the noise.
-	\item Find the intensity gradients of the image.
-	\item Apply non-maximum suppression to get rid of spurious response to edge detection
-	\item Apply double threshold to determine potential edges.
-	\item Track edge by hysteresis. Finalize the detection of edges by suppressing all the other edges that are weak and not connected to strong edges. 
+\item Apply a Gaussian filter to smooth the image and remove noise.
+\item Find the intensity gradients of the image.
+\item Apply non-maximum suppression to get rid of spurious
+  responses to edge detection
+\item Apply a double threshold to determine potential edges.
+\item Track edges by hysteresis. Finalize the detection of
+  edges by suppressing all edges that are ``weak'' and not
+  connected to strong edges.
 \end{itemize}
 
-
-\subsection{Image segmentation using k-means clustering}
-K-Means algorithm is an unsupervised clustering algorithm that classifies the input data points into multiple classes based on their inherent distance from each other. The algorithm assumes that the data features form a vector space and tries to find natural clustering in them. The points are clustered around centroids \begin{math}\mu_{i} \forall i = 1...k\end{math} which are obtained by minimizing the objective
+\subsection{Image segmentation using $k$-means clustering}
+The $k$-means algorithm is an unsupervised clustering algorithm that
+classifies input data points into multiple classes based on their
+Euclidean distance from each other. The algorithm assumes that the
+data features form a vector space and tries to find natural
+clusterings within it. The points are clustered around
+centroids \begin{math}\mu_{i} \forall i = 1...k\end{math} which are
+  obtained by minimizing the objective
 \begin{equation}
 	V = \sum\limits_{i=1}^n \sum\limits_{x_{j}\in S_{i}} (x_{j} - \mu_{i})^2
 \end{equation}
 
-where there are \begin{math}k\end{math} clusters \begin{math} S_{i},i=1,2,...,k \end{math} and \begin{math} \mu_{i} \end{math} is the centroid or mean point of all the points \begin{math}x_{j} \in S_{i}\end{math} 
+where there are \begin{math}k\end{math} clusters \begin{math}
+    S_{i},i=1,2,...,k \end{math} and \begin{math} \mu_{i} \end{math}
+  is the centroid or mean point of all the points \begin{math}x_{j}
+    \in S_{i}\end{math}.
 
-As a part of the experiment, an iterative version of the algorithm was implemented. The algorithm takes a 2 dimensional image as input. Various steps in the algorithm are as follows:
+For the purposes of our experiment, we implemented iterative versions
+of the algorithm. The algorithm takes a 2-dimensional image as
+input. The steps of the algorithm are as follows:
 
 \begin{itemize}
-	\item Compute the intensity distribution(also called the histogram) of the intensities.
-	\item Initialize the centroids with k random intensities.
-	\item Repeat the following steps until the cluster labels of the image does not change anymore.
-	\item Cluster the points based on distance of their intensities from the centroid intensities.
+\item Compute the intensity distribution (also called the
+  histogram) of the image.
+\item Initialize the centroids with $k$ random intensities.
+\item Repeat the following steps until the cluster labels of
+  the image stop changing from one iteration to the next:
+  \begin{itemize}
+  \item Cluster the points based on the distance of their intensities
+    from the centroid's intensity.
 	\begin{equation}
-		c^{i} := arg min_{j}||x^{i} - \mu_{j}||^2
+		c^{i} := \mbox{argmin}_{j}||x^{i} - \mu_{j}||^2
 	\end{equation}
 	\item Compute the new centroid for each of the clusters.
 	\begin{equation}
 		\mu_{i} = \frac{\sum\limits_{i=1}^{m} 1\{c_{i} = j\}x^i}{\sum\limits_{i=1}^{m} 1\{c_{i} = j\}}
 	\end{equation}
 	
-	where \begin{math}k\end{math} is a parameter of the algorithm (the number of clusters to be found), \begin{math}i\end{math} iterates over that all the intensities, \begin{math}j\end{math} iterates over all the centroids and \begin{math}\mu_{i}\end{math} are the centroid intensities.
+	where \begin{math}k\end{math} is a parameter of the algorithm
+          (the number of clusters to be
+          found), \begin{math}i\end{math} iterates over all the
+            intensities, \begin{math}j\end{math} iterates over all the
+              centroids and \begin{math}\mu_{i}\end{math} are the
+              centroid intensities.
+  \end{itemize}
 \end{itemize}
 	
-
 \section{Experimental Results}
-
 
 We describe two image processing algorithms using Hadoop Image Processing framework. These image processing algorithms are relatively simple to implement on a single node, implementing these algorithms are complex and inefficient on existing platforms, yet simple to implement using the framework.In the following section we provided image processing computations with the data set described in Section VA. The hardware and software specifications are provided in Section VB as well as observations in Section VC 
 

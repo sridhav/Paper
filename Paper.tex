@@ -158,6 +158,7 @@ advantage of very large image data stores.
 	While the above shows that there has been lot of work in this area, providing a framework to ease the process develop large-scale image processing applications. The question remains how the performance for Hadoop can be increased for large scale image processing tasks on small files.
 	
 \section{Methodology}
+\label{methodology}
 The Hadoop Image Processing Framework is intended to provide users
 with an accessible, easy-to-use tool for developing large-scale image
 processing applications.
@@ -400,7 +401,8 @@ lacks a reduce phase.
 \end{figure}
 
 
-\section{Image Processing Computations}
+\section{Image Processing Algorithms}
+\label{algorithms}
 To explore the Hadoop Image Processing Framework's capabilities and
 performance, we implemented multiple variations of existing
 widely-used image processing algorithms:
@@ -523,8 +525,18 @@ input. The steps of the algorithm are as follows:
 	
 \section{Experimental Results}
 
-We describe two image processing algorithms using Hadoop Image Processing framework. These image processing algorithms are relatively simple to implement on a single node, implementing these algorithms are complex and inefficient on existing platforms, yet simple to implement using the framework.In the following section we provided image processing computations with the data set described in Section VA. The hardware and software specifications are provided in Section VB as well as observations in Section VC 
-
+We present execution time and programming complexity results for the
+three image processing algorithms described above, demonstrating the
+effectiveness of the Hadoop Image Processing Framework.  These
+algorithms are not particularly challenging to implement on a single
+node, but producing a distributed Hadoop implementation is quite
+challenging and requires a great deal of familiarity with Hadoop
+concepts and distributed software engineering expertise.  On the other
+hand, our framework provides all of the performance and scalability
+benefits of the Hadoop system while retaining the simplicity of the
+single-node implementation.  In this section we describe the dataset
+and hardware and software specifications used in our experiments, and
+discuss the results.
 
 %\begin{figure}[h]
 %	\centering
@@ -541,41 +553,80 @@ We describe two image processing algorithms using Hadoop Image Processing framew
 %\end{figure}
 
 \subsection{Characteristics of Image Dataset, Hardware and Software}
-We computed image processing computations on a dataset which is about 1TB size. The data set is made from the flickr search based on a keyword flight. The data set is extracted using the a FlickrRipper in the framework which implements Ripper Interface. The Ripper interface can be implemented for any custom Rippers to get the image URLs. The example data set is composed of 220000 images at 4.76 MB/image equals to 1 TB.  
+We performed image processing computations on a dataset of about 1TB
+in size. The dataset was obtained by performing a Flickr search based
+on the keyword ``flight''.  The dataset was extracted using the
+FlickrRipper, an instance of the Ripper interface provided by our
+Hadoop Image Processing Framework.  The framework currently provides
+rippers for Flickr and Google Image searches, and more will be
+provided in the future.  A Ripper interface extracts image URLs from
+search results, and can be implemented for any set of results in any
+format.  The experimental dataset is composed of 220000 images at 4.76
+MB/image, or about 1 TB.
 
 \subsection{Computer Hardware and Software Characterstics}
-We ran the image processing computations on a cluster with 6 nodes and on a desktop computer. Table summarizes the cluster and desktop hardware and software specifications. The cluster nodes differ in terms of CPU speed and RAM. We installed hadoop, cloudera CDH5 and java 1.7 on the cluster to support java code execution. The desktop computer had similar software configuration to the cluster.
+We ran the image processing computations on a 6-node distributed
+cluster and on a single-node desktop computer. The table below
+summarizes the cluster and desktop hardware and software
+specifications. The cluster nodes differ in terms of CPU speed and
+RAM. We installed Hadoop, Cloudera CDH5 and Java 1.7 on the cluster to
+support Java code execution. The desktop computer had a similar
+software configuration to the cluster.
 
 \begin{table}[h]
 	\begin{tabular}{|l|l|l|l|}
 		\hline
 		& \multicolumn{1}{c|}{\textbf{Specs}}                            & \multicolumn{1}{c|}{\textbf{Cluster}}                                                                                                           & \multicolumn{1}{c|}{\textbf{Desktop}}                                                                               \\ \hline
-		\multirow{2}{*}{Hardware} & Cluster Nodes                                                  & \begin{tabular}[c]{@{}l@{}}6 datanodes having \\ from 2 to 4 virtual \\ processors with 4 GB\\ RAM and namenode \\ having 8 GB RAM\end{tabular} & \begin{tabular}[c]{@{}l@{}}Intel Xeon @ 2Ghz\\ 8 cores, 16GB of RAM \\ and hyper threading\\ activated\end{tabular} \\ \cline{2-4} 
-		& Networking                                                     & 1Gbit/second                                                                                                                                    &                                                                                                                     \\ \hline
+		\multirow{2}{*}{Hardware} & Cluster Nodes                                                  & \begin{tabular}[c]{@{}l@{}}6 data nodes with \\ from 2 to 4 virtual \\ processors and 4 GB\\ RAM and name node \\ with 8 GB RAM\end{tabular} & \begin{tabular}[c]{@{}l@{}}Intel Xeon @ 2Ghz\\ 8 cores, 16GB of RAM \\ and hyperthreading\\ activated\end{tabular} \\ \cline{2-4} 
+		& Networking                                                     & 1 Gbit/second                                                                                                                                    &                                                                                                                     \\ \hline
 		\multirow{3}{*}{Software} & \begin{tabular}[c]{@{}l@{}}Java Virtual\\ Machine\end{tabular} & \begin{tabular}[c]{@{}l@{}}Java version \\ "1.7.0\_45"\\ Java SE Runtime\\ Environment\end{tabular}                                             & \begin{tabular}[c]{@{}l@{}}Java version \\ "1.7.0\_45"\\ Java SE Runtime\\ Environment\end{tabular}                 \\ \cline{2-4} 
-		& Hadoop                                                         & \begin{tabular}[c]{@{}l@{}}hadoop 2.5\\ cloudera CDH5\end{tabular}                                                                              &                                                                                                                     \\ \cline{2-4} 
+		& Hadoop                                                         & \begin{tabular}[c]{@{}l@{}}Hadoop 2.5\\ Cloudera CDH5\end{tabular}                                                                              &                                                                                                                     \\ \cline{2-4} 
 		& \begin{tabular}[c]{@{}l@{}}Operating\\ System\end{tabular}     & CentOS 6.5                                                                                                                                      & CentOS 6.5                                                                                                          \\ \hline
 	\end{tabular}
 \end{table}
 
 
-The desktop implementation of the Algorithm is a java program for processing a small image dataset. As soon as the data set is processed the program halts. The desktop implementation starts as a single thread. One image is processed every time. As soon as the image is processed, it starts processing a new image. When the data set size is low, the program runs smooth with best performance. As data set size increases to Tera-bytes the system can't handle such huge amounts of data. To handle such large amounts of data we use the distributed computing using hadoop.
+The desktop implementations of the algorithms are Java programs for
+processing a small image dataset. As soon as the data set is processed
+the program halts. The desktop implementation starts as a single
+thread, and images are processed one at a time in succession.  When
+the dataset size is low, each program runs smoothly and with excellent
+performance.  However, as the size of the data to be processed reaches
+the terabyte scale, such a single-process approach fails utterly.
+Data on this scale must be processed in distributed fashion using
+Hadoop.
 
+Each algorithm is also implemented on a Hadoop cluster without using
+the Hadoop Image Processing Framework.  These implementations overcome
+the problem of handling large datasets but they suffer from extremely
+complex code.  The user needs to write a great deal of code and
+understand the technical details of Hadoop. Writing such code,
+including custom InputFormats and RecordReaders, is cumbersome and
+error-prone. Fig. \ref{fig:module-chart} compares the actual lines of
+code a user needs to write in order to run our experimental algorithms
+(or any similar image processing application) on a Hadoop cluster.
 
- 
-
-The Algorithm is implemented on a hadoop cluster without using framework. It overcomes the problem of handling large datasets but suffers with a problem of code complexity. The user needs to write a huge amount of code and understand the technical details of hadoop. Writing such huge amounts of code including the custom InputFormats and RecordReaders is cumbersome. Fig.\ref{fig:module-chart} compares the actual lines of code user needs to write to run an Image Processing application in hadoop cluster which makes an average user life harder to use the hadoop features.
-
-The Algorithm is finally implemented on a hadoop cluster using the framework. It overcomes many problems handling large datasets, code complexity, interoperability between image datatypes etc., The process of creating CustomInputFormat and RecordReader is automated as per the input. User can tune the settings using different getter and setter method to get the desired output. The framework is so transparent that the user needs to input few lines of code to process a large image data set. It hides all the MapReduce Technical details and runs the code highly parallelized. The key differences among the three platform-specific implementation lie in computation elasticity and code complexity associated with each platform.
-
+Finally, we compare the same algorithms implemented on a Hadoop
+cluster using the framework.  These implementations overcome the
+problems of handling large datasets and managing interoperability
+between image datatypes while holding code complexity down to the same
+level as the single-process, local implementation.  Users enjoy
+automated creation of custom InputFormats and RecordReaders, and can
+tune settings for the desired output.  The framework is so transparent
+that the user needs only a few lines of code to process a large image
+data set. It hides the technical details of MapReduce and runs the
+code in highly parallelized fashion.  The code required to implement
+each image processing algorithm is no more complex than the same
+algorithm implemented on a local, single-threaded system, but the
+performance improvement for large datasets is immense.
 
 \begin{table}[h]
 	\begin{tabular}{|l|l|l|l|}
 		\hline
 		\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Computa-\\ tional\\ Platform\end{tabular}}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Computational \\ Elasticity\end{tabular}}}      & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Code \\ Complexity\end{tabular}}}                                                                                                                                                  & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Data \\ Locality\end{tabular}}}                                                                           \\ \hline
 		Desktop                                                                                             & \begin{tabular}[c]{@{}l@{}}Low : limited by \\ RAM and CPU of \\ the executing\\ computer\end{tabular} & \begin{tabular}[c]{@{}l@{}}Normal : Complexity \\ lies in writing the \\ algorithm\end{tabular}                                                                                                                                           & \begin{tabular}[c]{@{}l@{}}All data are \\ on local disk\end{tabular}                                                                                            \\ \hline
-		\begin{tabular}[c]{@{}l@{}}Hadoop:\\ without \\ using \\ framework\end{tabular}                     & \begin{tabular}[c]{@{}l@{}}High: Nodes can\\  be requested \\ as needed\end{tabular}                   & \begin{tabular}[c]{@{}l@{}}Heavy : Complexity \\ lies inwriting every \\ module in framework \\ including custom \\ Input Formats and \\ RecordReaders.User \\ should have high \\ technical knowledge on \\ hadoop working.\end{tabular} & \begin{tabular}[c]{@{}l@{}}All data resides\\ in HDFS. Custom\\ InputFormats \\ needsto be \\ created to launch\\ computations \\ where thedata are\end{tabular} \\ \hline
-		\begin{tabular}[c]{@{}l@{}}Hadoop:\\ using \\ framework\end{tabular}                                & \begin{tabular}[c]{@{}l@{}}High: Nodes can \\ be requested \\ as needed\end{tabular}                   & \begin{tabular}[c]{@{}l@{}}Normal : Complexity \\ lies in writing \\ algorithm and is \\ equivalent to writing \\ in Desktop platform\end{tabular}                                                                                        & \begin{tabular}[c]{@{}l@{}}All data resides \\ in HDFS. Highly \\ parallelized.\end{tabular}                                                                     \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Hadoop:\\ without \\ using \\ framework\end{tabular}                     & \begin{tabular}[c]{@{}l@{}}High: Nodes can\\  be requested \\ as needed\end{tabular}                   & \begin{tabular}[c]{@{}l@{}}Heavy : Complexity \\ lies in writing every \\ module in framework \\ including custom \\ InputFormats and \\ RecordReaders.  User \\ requires high \\ technical expertise \\ with Hadoop.\end{tabular} & \begin{tabular}[c]{@{}l@{}}All data resides\\ in HDFS. Custom\\ InputFormats \\ need to be \\ created to launch\\ computations \\ in appropriate \\ locations\end{tabular} \\ \hline
+		\begin{tabular}[c]{@{}l@{}}Hadoop:\\ using \\ framework\end{tabular}                                & \begin{tabular}[c]{@{}l@{}}High: Nodes can \\ be requested \\ as needed\end{tabular}                   & \begin{tabular}[c]{@{}l@{}}Normal : Complexity \\ lies in writing \\ algorithm and is \\ equivalent to writing \\ on desktop platform\end{tabular}                                                                                        & \begin{tabular}[c]{@{}l@{}}All data resides \\ in HDFS. Highly \\ parallelized.\end{tabular}                                                                     \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -598,49 +649,76 @@ The Algorithm is finally implemented on a hadoop cluster using the framework. It
 
 \subsection{Observations}   
 
-We have documented the following samples in the space of image processing
-computations, and hardware and software configurations applied to the selected
-data set.
+We have explored the space of image processing algorithms, applying
+different hardware and software configurations to the various data
+sets.  Specifically, we compared:
+
 \begin{itemize}
-	\item Three image processing computations described in Table 1.
-	\item Sampled data set of different image counts.
-	\item Hardware cluster configurations used for computations. 
-	\item Coding complexities in different environments for the three image processing computations
+\item Three image processing algorithms described in Section
+  \ref{algorithms}
+\item Datasets of varying image counts
+\item Configurations of hardware cluster used for computations 
+\item Coding complexity (measured in Lines of Code (LOC)
 \end{itemize}
 
-The numerical results are shown in Figure 1 through 6.
+The numerical results are shown in Figures \ref{fig:perf-chart}
+through \ref{fig:files-chart}.
 
-Figure \ref{fig:perf-chart} illustrates the performance comparison of Single Node, Hadoop using framework and Hadoop without using the framework for Canny Edge Detection.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.45\textwidth]{perf-graph}
-	\caption{Canny Edge Detection computations executed on single node and on a Hadoop cluster with and without using framework}
-	\label{fig:perf-chart}
-\end{figure}
-It can be observed that the performance hadoop cluster is almost the same with and without using framework. The framework performs well sometimes because of multi-threading is implemented few tasks. Considering the single node performance it can be seen that the single node outperforms hadoop if the input is small as the input size increases handling huge data becomes infeasible. The same pattern is observed with any image processing algorithm. 
-
-Figure \ref{fig:module-chart} compares coding complexities of different modules the framework described. The Downloader module and Extractor module are simple to use and require less number of lines of code to configure. The processor module includes the algorithm the user devised, which adds up a few extra lines of code. but configuring the devised algorithm to a MapReduce job is fairly simple with very less number of steps. The modules are included with different methods for flexibility.  
+Figure \ref{fig:perf-chart} illustrates the performance comparison of
+Canny edge detection on a single node, on Hadoop using our framework
+and Hadoop without using the framework.
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.45\textwidth]{module-chart2}
-	\caption{Comparing coding complexities of modules in different environments}
-	\label{fig:module-chart}
+  \centering
+  \includegraphics[width=0.45\textwidth]{perf-graph}
+  \caption{Canny edge detection computation executed on a single node
+    and on a Hadoop cluster with and without using framework}
+  \label{fig:perf-chart}
 \end{figure}
 
-Figure \ref{fig:comp-chart} shows the coding complexities of three image processing computations from Table 1. Single node and the framework show similar coding complexity outperforming the image processing without framework. The reason behind this is Hadoop Image Processing Framework hides the inner details of MapReduce programming which makes an user to think that he is working on the single node but actually the task is processed in hadoop. Without the framework user needs to write a MapReduce job which is cumbersome. 
+It can be observed that the Hadoop cluster performance is nearly
+identical whether the Hadoop Image Processing Framework is used or
+not.  The single node performance is satisfactory on small input
+sizes; in fact it outperforms Hadoop when the amount of data is very
+small owing to the lack of MapReduce overhead.  However, as the amount
+of data grows the single node performance becomes increasingly poor.
+The same pattern is observed with any image processing algorithm.
 
+Figure \ref{fig:module-chart} compares the coding complexity of the
+different image handling and processing tasks described in Section
+\ref{methodology}, for the Canny edge detection task. The Downloader
+module and Extractor module are simple to use and require few lines of
+code to configure. The processor module includes the specific
+algorithm devised by the user, which can be significant amount of
+code, but using our framework to configure the algorithm for MapReduce
+requires almost no additional coding.
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.45\textwidth]{comp-chart}
-	\caption{Comparing coding complexities of laplacian filter, canny edge detection and k-means clustering  in different environments}
-	\label{fig:comp-chart}
+  \centering
+  \includegraphics[width=0.45\textwidth]{module-chart2}
+  \caption{Comparing coding complexities of modules in different
+    environments}
+  \label{fig:module-chart}
 \end{figure}
 
+Figure \ref{fig:comp-chart} shows the coding complexity of the
+processor portion of our three experimental image processing
+algorithms.  The naive single-process, single-node algorithm requires
+a similar amount of code to using our highly parallel, distributed
+framework, while direct implementation of the algorithm using Hadoop
+and MapReduce requires a great deal more effort.  The Hadoop Image
+Processing Framework hides all of this complexity from the user.
 
-Hadoop Image processing framework provides transparency over two levels. The first level of transparency allows user to use the predefined MapReduce modules Downloader, Processor and Extractor for processing the image modules. The second of level of transparency allows the users to write custom map reduce programs as the framework is built in an hierarchal manner.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.45\textwidth]{comp-chart}
+  \caption{Comparing coding complexity of Laplacian filter,
+    Canny edge detection and $k$-means clustering in different
+    environments}
+  \label{fig:comp-chart}
+\end{figure}
+
+The Hadoop Image processing framework provides transparency over two levels. The first level of transparency allows user to use the predefined MapReduce modules Downloader, Processor and Extractor for processing the image modules. The second of level of transparency allows the users to write custom map reduce programs as the framework is built in an hierarchal manner.
 
 The great thing about Hadoop Image Processing framework is its built in such a way that using it is really simple. The framework strictly adheres java file writing and reading techniques and extends it to a new level of BundleFile Writing and Reading using hadoop framework. This makes user to work with hadoop image processing more flexible and easier. The main aim of the framework is to provide an abstractness in such a way that programming on a single computer is equivalent to programming on a hadoop cluster.  Listing 1. provides the similarities in code writing in java and image processing framework. Making framework similar to java helps understanding the framework more easier and reduces complexity. Listing 2 shows a sample code for setting image headers for processed images.
 

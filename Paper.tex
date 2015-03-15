@@ -55,14 +55,14 @@ emerge. Most current image processing applications, designed for
 small-scale, local computation, do not scale well to web-sized
 problems with their large requirements for computational resources and
 storage.  The emergence of processing frameworks such as the Hadoop
-MapReduce\cite{Hadoop2009} platform addresses the problem of providing
+MapReduce\cite{dean2008} platform addresses the problem of providing
 a system for computationally intensive data processing and distributed
 storage. However, to learn the technical complexities of developing
 useful applications using Hadoop requires a large investment of time
 and experience on the part of the developer.  As such, the pool of
 researchers and programmers with the varied skills to develop
 applications that can use large sets of images has been limited. To
-address this we have developed the Hadoop Image Processing Framework,
+address this we have developed the Hadoop Image Processing Framework\footnote[1]{S. Vemula, C. Crick Hadoop Image Processing Framework https://github.com/okstate-robotics/hipl.git},
 which provides a Hadoop-based library to support large-scale image
 processing. The main aim of the framework is to allow developers of
 image processing applications to leverage the Hadoop MapReduce
@@ -178,7 +178,7 @@ The main goals of the Hadoop Image Processing Framework are:
 \end{itemize}
 
 \subsection{Downloading and storing image data}
-Hadoop uses the Hadoop Distributed File System (HDFS) to store files
+Hadoop uses the Hadoop Distributed File System (HDFS)\cite{Shvachko2010} to store files
 in various nodes throughout the cluster.  One of Hadoop's significant
 problems is that of small file storage. \cite{White2009} A small file
 is one which is significantly smaller than HDFS block size.  Large

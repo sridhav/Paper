@@ -503,18 +503,9 @@ We ran the image processing computations on a cluster with 6 nodes and on a desk
 \end{table}
 
 
-\subsection{Observations}   
-
 The desktop implementation of the Algorithm is a java program for processing a small image dataset. As soon as the data set is processed the program halts. The desktop implementation starts as a single thread. One image is processed every time. As soon as the image is processed, it starts processing a new image. When the data set size is low, the program runs smooth with best performance. As data set size increases to Tera-bytes the system can't handle such huge amounts of data. To handle such large amounts of data we use the distributed computing using hadoop.
 
 
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.45\textwidth]{module-chart}
-	\caption{Module Chart}
-	\label{fig:module-chart}
-\end{figure}
  
 
 The Algorithm is implemented on a hadoop cluster without using framework. It overcomes the problem of handling large datasets but suffers with a problem of code complexity. The user needs to write a huge amount of code and understand the technical details of hadoop. Writing such huge amounts of code including the custom InputFormats and RecordReaders is cumbersome. Fig.\ref{fig:module-chart} compares the actual lines of code user needs to write to run an Image Processing application in hadoop cluster which makes an average user life harder to use the hadoop features.
@@ -549,18 +540,62 @@ The Algorithm is finally implemented on a hadoop cluster using the framework. It
 \end{table}
 \fi
 
+\subsection{Observations}   
 
-Hadoop Image processing framework provides transparency over two levels. The first level of transparency allows user to use the predefined MapReduce modules Downloader, Processor and Extractor for processing the image modules. The second of level of transparency allows the users to write custom map reduce programs as the framework is built in an hierarchal manner.
+We have documented the following samples in the space of image processing
+computations, and hardware and software configurations applied to the selected
+data set.
+\begin{itemize}
+	\item Three image processing computations described in Table 1.
+	\item Sampled data set of different image counts.
+	\item Hardware cluster configurations used for computations. 
+	\item Coding complexities in different environments for the three image processing computations
+\end{itemize}
 
-The great thing about Hadoop Image Processing framework is its built in such a way that using it is really simple. The framework strictly adheres java file writing and reading techniques and extends it to a new level of BundleFile Writing and Reading using hadoop framework. This makes user to work with hadoop image processing more flexible and easier. The main aim of the framework is to provide an abstractness in such a way that programming on a single computer is equivalent to programming on a hadoop cluster.  Listing 1. provides the similarities in code writing in java and image processing framework. Making framework similar to java helps understanding the framework more easier and reduces complexity.
+The numerical results are shown in Figure 1 through 6.
+
+Figure \ref{fig:perf-chart} illustrates the performance comparison of Single Node, Hadoop using framework and Hadoop without using the framework for Canny Edge Detection.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.45\textwidth]{perf-graph}
+	\caption{Canny Edge Detection computations executed on single node and on a Hadoop cluster with and without using framework}
+	\label{fig:perf-chart}
+\end{figure}
+It can be observed that the performance hadoop cluster is almost the same with and without using framework. The framework performs well sometimes because of multi-threading is implemented few tasks. Considering the single node performance it can be seen that the single node outperforms hadoop if the input is small as the input size increases handling huge data becomes infeasible. The same pattern is observed with any image processing algorithm. 
+
+Figure \ref{fig:module-chart} compares coding complexities of different modules the framework described. The Downloader module and Extractor module are simple to use and require less number of lines of code to configure. The processor module includes the algorithm the user devised, which adds up a few extra lines of code. but configuring the devised algorithm to a MapReduce job is fairly simple with very less number of steps. The modules are included with different methods for flexibility.  
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.45\textwidth]{module-chart2}
+	\caption{Comparing coding complexities of modules in different environments}
+	\label{fig:module-chart}
+\end{figure}
+
+Figure \ref{fig:comp-chart} shows the coding complexities of three image processing computations from Table 1. Single node and the framework show similar coding complexity outperforming the image processing without framework. The reason behind this is Hadoop Image Processing Framework hides the inner details of MapReduce programming which makes an user to think that he is working on the single node but actually the task is processed in hadoop. Without the framework user needs to write a MapReduce job which is cumbersome. 
 
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.45\textwidth]{files-chart}
+	\includegraphics[width=0.45\textwidth]{comp-chart}
+	\caption{Comparing coding complexities of laplacian filter, canny edge detection and k-means clustering  in different environments}
+	\label{fig:comp-chart}
+\end{figure}
+
+
+Hadoop Image processing framework provides transparency over two levels. The first level of transparency allows user to use the predefined MapReduce modules Downloader, Processor and Extractor for processing the image modules. The second of level of transparency allows the users to write custom map reduce programs as the framework is built in an hierarchal manner.
+
+The great thing about Hadoop Image Processing framework is its built in such a way that using it is really simple. The framework strictly adheres java file writing and reading techniques and extends it to a new level of BundleFile Writing and Reading using hadoop framework. This makes user to work with hadoop image processing more flexible and easier. The main aim of the framework is to provide an abstractness in such a way that programming on a single computer is equivalent to programming on a hadoop cluster.  Listing 1. provides the similarities in code writing in java and image processing framework. Making framework similar to java helps understanding the framework more easier and reduces complexity. Listing 2 shows a sample code for setting image headers for processed images.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.45\textwidth]{files-chart2}
 	\caption{Comparing File Writers and readers without and with using framework }
 	\label{fig:files-chart}
 \end{figure}
+
+
 
 \begin{lstlisting}[caption = Comparing File Writer instance in java and SequenceBundleWriter instance in Hadoop Image Processing framework ]
 
@@ -581,6 +616,16 @@ sbw.close();
 \end{lstlisting}
 
 
+\begin{lstlisting}[caption = Setting image headers for processed images using Hadoop Image Processing Framework]
+
+//input - HImage is sent as input 
+
+CannyEdge canny = new CannyEdge(input);
+canny.process();
+HImage himage = canny.getProcessedImage();
+himage.setImageHeader(input.getImageHeader());
+
+\end{lstlisting}
 \section{Conclusion}
 This paper has described our framework fo image processing for large scale image processing applications on the MapReduce framework. The framework is designed to abstract the technical details of Hadoop's powerful MapReduce framework and provide a way for users who want to process large image datasets. We provided a how the images can be stored in different hadoop file format and efficient access within Map Reduce pipeline and simple modules to make the framework more easier. By providing interoperability between different image data types we give the user to process the images using different open-source image processing libraries. Finally, we provide a way to overcome the loss of image headers after processing which are most useful for image processing and vision applications.
 

@@ -780,15 +780,40 @@ himage.setImageHeader(input.getImageHeader());
 
 \end{lstlisting}
 \section{Conclusion}
-This paper has described our framework fo image processing for large scale image processing applications on the MapReduce framework. The framework is designed to abstract the technical details of Hadoop's powerful MapReduce framework and provide a way for users who want to process large image datasets. We provided a how the images can be stored in different hadoop file format and efficient access within Map Reduce pipeline and simple modules to make the framework more easier. By providing interoperability between different image data types we give the user to process the images using different open-source image processing libraries. Finally, we provide a way to overcome the loss of image headers after processing which are most useful for image processing and vision applications.
+This paper has described our Hadoop Image Processing Framework for
+implementing large scale image processing applications.  The framework
+is designed to abstract the technical details of Hadoop's powerful
+MapReduce system and provide an easy mechanism for users to process
+large image datasets. We provide software machinery for storing images
+in the various Hadoop file formats and efficiently accessing the Map
+Reduce pipeline.  By providing interoperability between different
+image data types we allow the user to leverage many different
+open-source image processing libraries. Finally, we provide the means
+to preserve image headers throughout image manipulation process,
+retaining useful and valuable information for image processing and
+vision applications.
 
-With these features, the framework brings a new level of transparency and simplicity for creating large-scale image processing applications over Hadoop's MapReduce framework. The paper describes to example applications built using the framework to demonstrate the power of the framework. We hope that this level of abstractness to use Hadoop MapReduce framework will enhance the ability to create large-scale image processing applications with ease.
+With these features, the framework provides a new level of
+transparency and simplicity for creating large-scale image processing
+applications on top of Hadoop's MapReduce framework.  We demonstrate
+the power and effectiveness of the framework in terms of performance
+enhancement and complexity reduction.  The Hadoop Image Processing
+Framework should greatly expand the population of software developers
+and researchers easily able to create large-scale image processing
+applications.
 
 \section{Future Work}
-In the near future we hope to extend the framework into a full-fledged multimedia processing framework. We would like to improve framework such that audio and video processing over hadoop is done with ease. We also intend to add a CUDA module for using the graphics card for processing the images. Finally, we intend to wrap our system into an highly parallelized open-source hadoop multimedia processing framework and perhaps provide a sample web-based graphic user interface with all image processing applications.  
+In the near future we hope to extend the framework into a full-fledged
+multimedia processing framework. We would like to improve the
+framework to handle audio and video processing over Hadoop with
+similar ease. We also intend to add a CUDA module to allow processing
+tasks to make use of machines' graphics cards. Finally, we intend to
+develop our system into a highly parallelized open-source Hadoop
+multimedia processing framework, providing web-based graphical user
+interfaces for image processing applications.
 
-	\bibliography{references}
-	\bibliographystyle{IEEEtran}
+\bibliography{references}
+\bibliographystyle{IEEEtran}
 
 \end{document}
 

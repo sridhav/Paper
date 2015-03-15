@@ -718,18 +718,38 @@ Processing Framework hides all of this complexity from the user.
   \label{fig:comp-chart}
 \end{figure}
 
-The Hadoop Image processing framework provides transparency over two levels. The first level of transparency allows user to use the predefined MapReduce modules Downloader, Processor and Extractor for processing the image modules. The second of level of transparency allows the users to write custom map reduce programs as the framework is built in an hierarchal manner.
+The Hadoop Image processing framework provides transparency on
+multiple levels.  Users can use the predefined MapReduce modules
+(Downloader, Processor and Extractor) for processing the image
+modules, and most image processing tasks require no more than this.
+Users may also write custom MapReduce tasks within the framework,
+taking advantage of its hierarchical construction.  This still
+protects the user from the full complexity and error-prone nature of
+the full Hadoop framework, but requires additional knowledge and
+expertise on the user's part.
 
-The great thing about Hadoop Image Processing framework is its built in such a way that using it is really simple. The framework strictly adheres java file writing and reading techniques and extends it to a new level of BundleFile Writing and Reading using hadoop framework. This makes user to work with hadoop image processing more flexible and easier. The main aim of the framework is to provide an abstractness in such a way that programming on a single computer is equivalent to programming on a hadoop cluster.  Listing 1. provides the similarities in code writing in java and image processing framework. Making framework similar to java helps understanding the framework more easier and reduces complexity. Listing 2 shows a sample code for setting image headers for processed images.
+The Hadoop Image Processing Framework is intended to be extremely
+simple to use. The framework strictly adheres to Java file writing and
+reading techniques, extending those conventions to the Hadoop
+framework's notion of reading and writing bundle files.  In this way,
+working with Hadoop image processing is exactly like working on a
+single system.  The main aim of the framework is to provide useful
+software abstractions such that programming on a Hadoop cluster is
+equivalent to programming on a single computer.  Listing 1
+demonstrates the similarity between Java code written for a single
+machine and the same code using the image processing framework.  The
+framework's use of ordinary Java conventions helps in understanding
+the software engineering process and reduces complexity.  Listing 2
+demonstrates the mechanism for setting the image headers of processed
+images.
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.45\textwidth]{files-chart2}
-	\caption{Comparing File Writers and readers without and with using framework }
-	\label{fig:files-chart}
+  \centering
+  \includegraphics[width=0.45\textwidth]{files-chart2}
+  \caption{Comparing file writers and readers with and without using
+    framework}
+  \label{fig:files-chart}
 \end{figure}
-
-
 
 \begin{lstlisting}[caption = Comparing File Writer instance in java and SequenceBundleWriter instance in Hadoop Image Processing framework ]
 
@@ -748,7 +768,6 @@ sbw.append(himage);
 sbw.close();
 
 \end{lstlisting}
-
 
 \begin{lstlisting}[caption = Setting image headers for processed images using Hadoop Image Processing Framework]
 

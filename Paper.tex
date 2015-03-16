@@ -802,16 +802,16 @@ images.
     framework}
   \label{fig:files-chart}
 \end{figure}
-
+\newpage
 \begin{lstlisting}[caption = Comparing FileWriter instance in java and SequenceBundleWriter instance in Hadoop Image Processing framework ]
-//Sample File Writing in Java
 
+//Sample File Writing in Java
 File file = new File("test");
 FileWriter fw = new FileWriter(file);
 fw.append(val)
 fw.close();
-//Sample BundleFile Writing in Hadoop using Framework
 
+//Sample BundleFile Writing in Hadoop using Framework
 BundleFile file = new BundleFile("test_bundle.seq");
 SequenceBundleWriter sbw = new SequenceBundleWriter(file);
 sbw.append(himage);
@@ -821,7 +821,6 @@ sbw.close();
 \begin{lstlisting}[caption = Setting image headers for processed images using Hadoop Image Processing Framework]
 
 //input - HImage is sent as input 
-
 CannyEdge canny = new CannyEdge(input);
 canny.process();
 HImage himage = canny.getProcessedImage();
